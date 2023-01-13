@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import css from './Searchbar.module.css';
+import Notify from 'notiflix/build/notiflix-notify-aio';
 
 
 export default function Searchbar({ onSubmit }) {
@@ -14,7 +13,7 @@ export default function Searchbar({ onSubmit }) {
   const hendleSubmit = e => {
     e.preventDefault();
     if (keyword.trim() === '') {
-      toast.error('please, specify your query!');
+      Notify.error('please, specify your query!');
       return;
     }
     onSubmit(keyword);

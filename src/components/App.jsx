@@ -4,7 +4,7 @@ import ImageGallery from './ImageGallery/ImageGallery';
 import Loader from './Loader/Loader';
 import Modal from './Modal/Modal';
 import Searchbar from './Searchbar/Searchbar';
-
+import imgAPI from 'services/api';
 
 export default function App() {
   const [request, setRequest] = useState('');
