@@ -1,23 +1,30 @@
-import React from 'react';
-import s from './ImageGallery.module.css';
+
+import css from './ImageGallery.module.css';
 import PropTypes from 'prop-types';
 import ImageGalleryItem from 'components/ImageGalleryItem/ImageGalleryItem';
 
-const ImageGallery = props => {
-  const { hits, onClick } = props;
-
+const ImageGallery = ({ pictures, toggleModal }) => {
   return (
-    <ul className={s.imageGallery}>
-      {hits.map(hit => {
-        return <ImageGalleryItem key={hit.id} hit={hit} onClick={onClick} />;
-      })}
+    <ul className={css.imageGallery}>
+      {!!pictures.length &&
+        pictures.map(({ id, webformatURL, largeImageURL }) => {
+          return (
+            <ImageGalleryItem
+              key={id}
+              webformatURL={webformatURL}
+              largeImageURL={largeImageURL}
+              toggleModal={toggleModal}
+            />
+          );
+        })}
     </ul>
   );
 };
 
-ImageGallery.propTypes = {
-  hits: PropTypes.arrayOf(PropTypes.shape).isRequired,
-  onClick: PropTypes.func.isRequired,
+ImageGallery.prototype = {
+  pictures: PropTypes.object.isRequired,
+  toggleModal: PropTypes.func.isRequired,
 };
+
 
 export default ImageGallery;

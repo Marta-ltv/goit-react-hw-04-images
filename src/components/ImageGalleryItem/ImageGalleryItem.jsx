@@ -1,25 +1,26 @@
-import React from 'react';
-import s from './ImageGalleryItem.module.css';
+
+import css from './ImageGalleryItem.module.css';
 import PropTypes from 'prop-types';
 
-const ImageGalleryItem = props => {
-  const { hit, onClick } = props;
+const ImageGalleryItem = ({ largeImageURL, webformatURL, toggleModal }) => {
   return (
-    <li className={s.imageGalleryItem} id={hit.id} onClick={onClick}>
-      <img
-        src={hit.webformatURL}
-        alt={hit.tags}
-        data-src={hit.largeImageURL}
-        loading="lazy"
-        className={s.imageGalleryItem__image}
-      />
-    </li>
+    <>
+      <li className={css.imageGalleryItem}>
+        <img
+          className={css.imageGalleryItem__image}
+          src={webformatURL}
+          alt=""
+          onClick={() => toggleModal(largeImageURL)}
+        />
+      </li>
+    </>
   );
 };
+ImageGalleryItem.prototype = {
+  webformatURL: PropTypes.string.isRequired,
+  largeImageURL: PropTypes.string.isRequired,
 
-ImageGalleryItem.propTypes = {
-  hit: PropTypes.shape().isRequired,
-  onClick: PropTypes.func.isRequired,
+  toggleModal: PropTypes.func.isRequired,
 };
 
 export default ImageGalleryItem;

@@ -1,18 +1,46 @@
-import React from 'react';
-import SearchForm from 'components/SearchForm/SearchForm';
-import s from './Searchbar.module.css';
-import PropTypes from 'prop-types';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import css from './Searchbar.module.css';
 
 
-const Searchbar = ({ onSubmit }) => {
+export default function Searchbar({ onSubmit }) {
+  const [keyword, setKeyword] = useState('');
+
+  const handleInputСhange = e => {
+    setKeyword(e.currentTarget.value.toLowerCase());
+  };
+
+  const hendleSubmit = e => {
+    e.preventDefault();
+    if (keyword.trim() === '') {
+      toast.error('please, specify your query!');
+      return;
+    }
+    onSubmit(keyword);
+    e.currentTarget.reset();
+  };
+
   return (
-    <header className={s.searchbar}>
-      <SearchForm onSubmit={onSubmit} />
-    </header>
-  );
-};
-Searchbar.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
+    <>
+      <header className={css.searchbar}>
+        <form className={css.searchForm} onSubmit={hendleSubmit}>
+          <button type="submit" className={css.searchFormButton}>
+            <span className={css.searchFormButtonLabel}>Search</span>
+          </button>
 
-export default Searchbar;
+          <input
+            className={css.searchFormInput}
+            type="text"
+            autoComplete="off"
+            autoFocus
+            placeholder="Search images and photos"
+            onChange={handleInputСhange}
+          />
+        </form>
+      </header>
+    </>
+  );
+}
+
+

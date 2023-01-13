@@ -1,69 +1,63 @@
-import React, { Component } from 'react';
+import  { useState, useEffect } from 'react';
 import Button from './Button/Button';
-import ImageInfo from './ImageInfo/ImageInfo';
+import ImageGallery from './ImageGallery/ImageGallery';
+import Loader from './Loader/Loader';
 import Modal from './Modal/Modal';
 import Searchbar from './Searchbar/Searchbar';
 
-class App extends Component {
-  state = {
-    showModal: false,
-    searchQuery: '',
-    page: 1,
-    src: '',
-    alt: '',
-    moreVisible: false,
-  };
 
-  toggleModal = e => {
-    this.setState(({ showModal }) => ({ showModal: !showModal }));
+export default function App() {
+  const [request, setRequest] = useState('');
+  const [pictures, setPictures] = useState([]);
+  const [page, setPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [totalHits, setTotalHits] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const [largeImageURL, setLargeImageURL] = useState(null);
+  const length = pictures.length !== 0;
+  const maxLength = pictures.length !== totalHits;
 
-    if (!this.state.showModal) {
-      this.setState({ src: e.target.dataset.src, alt: e.target.alt });
+  const hendleFormSubmit = keyword => {
+    if (keyword === request) {
+      return;
     }
+    setPictures([]);
+    setRequest(keyword);
+    setPage(1);
   };
 
-  submitForm = e => {
-    this.setState({ page: 1 });
-    this.setState({ searchQuery: e.value });
+  useEffect(() => {
+    if (request === '') {
+      return;
+    }
+    setIsLoading(isLoading => isLoading);
+    imgAPI
+      .fetchData(request, page)
+      .then(picture => {
+        setPictures(pictures => [...pictures, ...picture.hits]);
+        setTotalHits(picture.totalHits);
+      })
+      .finally(setIsLoading(isLoading => isLoading));
+  }, [request, page]);
+
+  const onLoadMore = () => {
+    setPage(page => page + 1);
   };
 
-  moreButtonRender = () => {
-    this.setState({ moreVisible: true });
+  const toggleModal = largeImageURL => {
+    setShowModal(showModal => !showModal);
+    setLargeImageURL(largeImageURL);
   };
 
-  moreButtonHide = () => {
-    this.setState({ moreVisible: false });
-  };
-
-  clickMoreButton = e => {
-    this.setState(prevState => {
-      return { page: prevState.page + 1 };
-    });
-  };
-
-  render() {
-    const { showModal, moreVisible, searchQuery, page, src, alt } = this.state;
-
-    return (
-      <>
-        <Searchbar onSubmit={this.submitForm} />
-        <ImageInfo
-          searchQuery={searchQuery}
-          page={page}
-          onClick={this.toggleModal}
-          moreButtonRender={this.moreButtonRender}
-          moreButtonHide={this.moreButtonHide}
-        />
-        {moreVisible && <Button onClick={this.clickMoreButton} />}
-
-        {showModal && (
-          <Modal onClose={this.toggleModal}>
-            <img src={src} alt={alt} />
-          </Modal>
-        )}
-      </>
-    );
-  }
+  return (
+    <>
+      <Searchbar onSubmit={hendleFormSubmit} />
+      <ImageGallery pictures={pictures} toggleModal={toggleModal} />
+      {isLoading && <Loader />}
+      {!isLoading && length && maxLength && <Button onLoadMore={onLoadMore} />}
+      {showModal && (
+        <Modal largeImageURL={largeImageURL} onClose={toggleModal} />
+      )}
+    </>
+  );
 }
-
-export default App;
